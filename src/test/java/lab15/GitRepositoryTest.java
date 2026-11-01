@@ -56,7 +56,7 @@ public class GitRepositoryTest {
         Commit mergeCommit = repository.mergePullRequest(pr.getId(), "Merge pull request #1 from lr1");
         assertTrue(pr.isMerged());
         assertTrue(mergeCommit.isMergeCommit());
-        assertEquals(2, mergeCommit.getParentHashes().size());
+        assertEquals(2, mergeCommit.getParentIds().size());
         assertEquals(mergeCommit, repository.getCurrentBranch().getHead());
     }
 

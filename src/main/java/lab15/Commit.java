@@ -7,22 +7,22 @@ import java.util.Collections;
 import java.util.List;
 
 public class Commit {
-    private final String hash;
+    private final int id;
     private final String message;
     private final String author;
     private final LocalDateTime timestamp;
-    private final List<String> parentHashes;
+    private final List<Integer> parentIds;
 
-    public Commit(String hash, String message, String author, List<String> parentHashes) {
-        this.hash = hash;
+    public Commit(int id, String message, String author, List<Integer> parentIds) {
+        this.id = id;
         this.message = message;
         this.author = author;
         this.timestamp = LocalDateTime.now();
-        this.parentHashes = parentHashes != null ? new ArrayList<>(parentHashes) : new ArrayList<>();
+        this.parentIds = parentIds != null ? new ArrayList<>(parentIds) : new ArrayList<>();
     }
 
-    public String getHash() {
-        return hash;
+    public int getId() {
+        return id;
     }
 
     public String getMessage() {
@@ -37,19 +37,19 @@ public class Commit {
         return timestamp;
     }
 
-    public List<String> getParentHashes() {
-        return Collections.unmodifiableList(parentHashes);
+    public List<Integer> getParentIds() {
+        return Collections.unmodifiableList(parentIds);
     }
 
     public boolean isMergeCommit() {
-        return parentHashes.size() > 1;
+        return parentIds.size() > 1;
     }
 
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String parents = parentHashes.isEmpty() ? "none" : String.join(", ", parentHashes);
-        return String.format("[%s] (Parents: %s) %s - %s <%s>", 
-                hash, parents, message, timestamp.format(formatter), author);
+        String parents = parentIds.isEmpty() ? "нет" : parentIds.toString();
+        return String.format("Коммит #%d (Родители: %s) %s - %s <%s>", 
+                id, parents, message, timestamp.format(formatter), author);
     }
 }

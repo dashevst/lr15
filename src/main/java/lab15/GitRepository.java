@@ -1,7 +1,5 @@
 package lab15;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -14,7 +12,7 @@ public class GitRepository {
     private Branch currentBranch;
     private final List<Commit> commits;
     private final List<PullRequest> pullRequests;
-    private int hashCounter;
+    private int commitSequence;
     private int prSequence;
 
     public GitRepository(String name) {
@@ -22,7 +20,7 @@ public class GitRepository {
         this.branches = new LinkedHashMap<>();
         this.commits = new ArrayList<>();
         this.pullRequests = new ArrayList<>();
-        this.hashCounter = 1;
+        this.commitSequence = 1;
         this.prSequence = 1;
 
         Branch mainBranch = new Branch("main", null);
@@ -69,13 +67,12 @@ public class GitRepository {
     }
 
     public Commit commit(String message, String author) {
-        List<String> parents = new ArrayList<>();
+        List<Integer> parents = new ArrayList<>();
         if (currentBranch.getHead() != null) {
-            parents.add(currentBranch.getHead().getHash());
+            parents.add(currentBranch.getHead().getId());
         }
 
-        String hash = generateHash(message, author);
-        Commit commit = new Commit(hash, message, author, parents);
+        Commit commit = new Commit(commitSequence++, message, author, parents);
         commits.add(commit);
         currentBranch.setHead(commit);
         return commit;
@@ -111,34 +108,19 @@ public class GitRepository {
             throw new IllegalStateException("Source branch has no commits");
         }
 
-        List<String> parents = new ArrayList<>();
+        List<Integer> parents = new ArrayList<>();
         if (target.getHead() != null) {
-            parents.add(target.getHead().getHash());
+            parents.add(target.getHead().getId());
         }
-        parents.add(source.getHead().getHash());
+        parents.add(source.getHead().getId());
 
-        String mergeHash = generateHash(mergeMessage, pr.getAuthor());
-        Commit mergeCommit = new Commit(mergeHash, mergeMessage, pr.getAuthor(), parents);
+        int mergeCommitId = commitSequence++;
+        Commit mergeCommit = new Commit(mergeCommitId, mergeMessage, pr.getAuthor(), parents);
         commits.add(mergeCommit);
 
         target.setHead(mergeCommit);
-        pr.completeMerge(mergeHash);
+        pr.completeMerge(mergeCommitId);
 
         return mergeCommit;
-    }
-
-    private String generateHash(String message, String author) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            String raw = message + author + System.nanoTime() + (hashCounter++);
-            byte[] digest = md.digest(raw.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < 4; i++) {
-                sb.append(String.format("%02x", digest[i]));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            return String.format("%07d", hashCounter++);
-        }
     }
 }

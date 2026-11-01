@@ -23,7 +23,7 @@ public class Branch {
 
     @Override
     public String toString() {
-        String headHash = head != null ? head.getHash() : "empty";
-        return String.format("Branch '%s' -> %s", name, headHash);
+        String headInfo = head != null ? "Коммит #" + head.getId() : "пусто";
+        return String.format("Ветка '%s' -> %s", name, headInfo);
     }
 }

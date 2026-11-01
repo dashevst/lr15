@@ -7,7 +7,7 @@ public class PullRequest {
     private final String targetBranch;
     private final String author;
     private boolean merged;
-    private String mergeCommitHash;
+    private Integer mergeCommitId;
 
     public PullRequest(int id, String title, String sourceBranch, String targetBranch, String author) {
         this.id = id;
@@ -16,7 +16,7 @@ public class PullRequest {
         this.targetBranch = targetBranch;
         this.author = author;
         this.merged = false;
-        this.mergeCommitHash = null;
+        this.mergeCommitId = null;
     }
 
     public int getId() {
@@ -43,18 +43,18 @@ public class PullRequest {
         return merged;
     }
 
-    public String getMergeCommitHash() {
-        return mergeCommitHash;
+    public Integer getMergeCommitId() {
+        return mergeCommitId;
     }
 
-    public void completeMerge(String mergeCommitHash) {
+    public void completeMerge(int mergeCommitId) {
         this.merged = true;
-        this.mergeCommitHash = mergeCommitHash;
+        this.mergeCommitId = mergeCommitId;
     }
 
     @Override
     public String toString() {
-        return String.format("PR #%d [%s -> %s] '%s' by %s (Status: %s)",
-                id, sourceBranch, targetBranch, title, author, merged ? "MERGED (" + mergeCommitHash + ")" : "OPEN");
+        return String.format("PR #%d [%s -> %s] '%s' by %s (Статус: %s)",
+                id, sourceBranch, targetBranch, title, author, merged ? "СЛИТ (Коммит #" + mergeCommitId + ")" : "ОТКРЫТ");
     }
 }
